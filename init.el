@@ -1,6 +1,20 @@
 ;; Package management
 (setq package-archives '(("melpa" . "http://melpa.org/packages/")))
 
+(defun get-home-path ()
+  (cond
+   ((or (string= system-type "gnu") (string= system-type "gnu/linux"))
+    (substitute-in-file-name "$HOME"))
+   ((string= system-type "windows-nt")
+    (substitute-in-file-name "$HOMEDRIVE$HOMEPATH"))))
+
+(defun get-docs-dir ()
+  (cond
+   ((or (string= system-type "gnu") (string= system-type "gnu/linux"))
+    (expand-file-name "docs" (get-home-path)))
+   ((string= system-type "windows-nt")
+    (expand-file-name "MyDocs" (get-home-path)))))
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -37,7 +51,7 @@
 
 (use-package org-roam
   :straight t
-  :custom (org-roam-directory "C:/Users/geric/MyDocs/notes")
+  :custom (org-roam-directory (expand-file-name "notes" (get-docs-dir)))
   :bind (("C-c n l" . org-roam-buffer-toggle)
          ("C-c n f" . org-roam-node-find)
          ("C-c n l" . org-roam-node-insert))
@@ -71,18 +85,19 @@
 (electric-pair-mode 1)
 
 ;; settings
-(setenv "COMSPEC" "cmd.exe")
+(when (string= system-type "windows-nt") (setenv "COMSPEC" "cmd.exe"))
 (setq ring-bell-function 'ignore)
 (setq display-line-numbers-type 'relative)
 (setq make-backup-files nil)
-(setq default-directory "C:/Users/geric/MyDocs")
+(setq default-directory (get-home-path))
 (setq auto-save-defaulft nil)
 (setq which-key-use-C-h-commands nil)
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 (setq-default olivetti-body-width 120)
 (setq-default olivetti-style 'fancy)
-(setq org-agenda-files '("C:/Users/geric/MyDocs/agenda"))
+
+
 
 (auto-save-mode 0)
 
